@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Cellular Automaton Explorer</title>
+<style>
+canvas { border:1px solid black; }
+</style>
+</head>
+<body>
+
+<h2>Modify the rules to create Cellular Automata</h2>
+
+<div id="rules"></div>
+
+<canvas id="grid" width="600" height="400"></canvas>
+
+<script>
+const patterns = ["111","110","101","100","011","010","001","000"];
+const rules = {};
+const rulesDiv = document.getElementById("rules");
+
+patterns.forEach(p=>{
+  rules[p]=0;
+  const cb=document.createElement("input");
+  cb.type="checkbox";
+  cb.onchange=()=>{rules[p]=cb.checked?1:0; run();};
+  rulesDiv.append(p+" → ");
+  rulesDiv.append(cb);
+  rulesDiv.append(document.createElement("br"));
+});
+
+const canvas=document.getElementById("grid");
+const ctx=canvas.getContext("2d");
+
+function run(){
+  const w=100;
+  const h=100;
+  let grid=[...Array(w)].map(()=>0);
+  grid[Math.floor(1)]=1;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let y=0;y<h;y++){
+    let next=[...Array(w)].map(()=>0);
+
+    for(let x=1;x<w-1;x++){
+      const key=`${grid[x-1]}${grid[x]}${grid[x+1]}`;
+      next[x]=rules[key];
+      if(grid[x]) ctx.fillRect(x*6,y*4,6,4);
+    }
+
+    grid=next;
+  }
+}
+
+run();
+</script>
+
+</body>
+</html>
